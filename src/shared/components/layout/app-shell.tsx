@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 
 export function AppShell() {
@@ -19,22 +19,55 @@ export function AppShell() {
         </div>
 
         <nav className="sidebar-nav">
-          <a className="sidebar-link active" href="/dashboard">
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? 'active' : ''}`
+            }
+          >
             Dashboard
-          </a>
-          <a className="sidebar-link" href="#">
+          </NavLink>
+
+          <NavLink
+            to="/agendamentos"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? 'active' : ''}`
+            }
+          >
             Agendamentos
-          </a>
-          <a className="sidebar-link" href="#">
+          </NavLink>
+
+          <NavLink
+            to="/clientes"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? 'active' : ''}`
+            }
+          >
             Clientes
-          </a>
-          <a className="sidebar-link" href="#">
+          </NavLink>
+
+          <NavLink
+            to="/servicos"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? 'active' : ''}`
+            }
+          >
             Serviços
-          </a>
-          <a className="sidebar-link" href="#">
+          </NavLink>
+
+          <NavLink
+            to="/perfil"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? 'active' : ''}`
+            }
+          >
             Perfil
-          </a>
+          </NavLink>
         </nav>
+
+        <button className="ghost-button" onClick={handleLogout}>
+          Sair
+        </button>
       </aside>
 
       <div className="app-content">
@@ -42,13 +75,9 @@ export function AppShell() {
           <div>
             <p className="topbar-title">Painel Administrativo</p>
             <p className="topbar-subtitle">
-              Bem vindo{user?.name ? `, ${user.name}` : ''}.
+              Bem-vindo{user?.name ? `, ${user.name}` : ''}.
             </p>
           </div>
-
-          <button className="ghost-button" onClick={handleLogout}>
-            Sair
-          </button>
         </header>
 
         <section className="page-content">
