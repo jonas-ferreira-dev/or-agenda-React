@@ -587,3 +587,65 @@ input {
   background: #fef2f2;
   color: #b91c1c;
 }
+
+.profile-photo-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 8px;
+}
+
+.profile-photo-wrapper {
+  width: 108px;
+  height: 108px;
+  flex-shrink: 0;
+}
+
+.profile-photo-preview,
+.profile-photo-placeholder {
+  width: 108px;
+  height: 108px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+}
+
+.profile-photo-placeholder {
+  display: grid;
+  place-items: center;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.profile-photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.upload-button {
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #111827;
+  cursor: pointer;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .profile-photo-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

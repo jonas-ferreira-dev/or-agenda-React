@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,7 +8,6 @@ import { Button } from '@/shared/components/ui/button';
 
 import {
   professionalProfileSchema,
-  type ProfessionalProfileSchemaInput,
   type ProfessionalProfileSchemaData,
 } from '../schemas/professional-profile-schema';
 import { createProfessionalProfile } from '../services/create-professional-profile';
@@ -25,6 +24,10 @@ export function ProfessionalProfileForm({
   onSuccess,
 }: ProfessionalProfileFormProps) {
   const [serverError, setServerError] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+  const [removePhoto, setRemovePhoto] = useState(false);
+
   const isEditMode = !!profile;
 
   const {
@@ -32,17 +35,12 @@ export function ProfessionalProfileForm({
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<
-    ProfessionalProfileSchemaInput,
-    unknown,
-    ProfessionalProfileSchemaData
-  >({
+  } = useForm<ProfessionalProfileSchemaData>({
     resolver: zodResolver(professionalProfileSchema),
     defaultValues: {
       slug: '',
       public_name: '',
       bio: '',
-      profile_photo: '',
       is_public: true,
       booking_enabled: true,
     },
@@ -53,11 +51,44 @@ export function ProfessionalProfileForm({
       slug: profile?.slug ?? '',
       public_name: profile?.public_name ?? '',
       bio: profile?.bio ?? '',
-      profile_photo: profile?.profile_photo ?? '',
       is_public: profile?.is_public ?? true,
       booking_enabled: profile?.booking_enabled ?? true,
     });
+
+    setSelectedFile(null);
+    setRemovePhoto(false);
+    setPreviewUrl(profile?.profile_photo_url ?? '');
   }, [profile, reset]);
+
+  useEffect(() => {
+    if (!selectedFile) return;
+
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreviewUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [selectedFile]);
+
+  const finalPreview = useMemo(() => {
+    return previewUrl || '';
+  }, [previewUrl]);
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    setSelectedFile(file);
+    setRemovePhoto(false);
+  }
+
+  function removeSelectedPhoto() {
+    setSelectedFile(null);
+    setPreviewUrl('');
+    setRemovePhoto(true);
+  }
 
   const onSubmit: SubmitHandler<ProfessionalProfileSchemaData> = async (
     formData
@@ -65,14 +96,24 @@ export function ProfessionalProfileForm({
     try {
       setServerError('');
 
-      const payload = {
-        slug: formData.slug,
-        public_name: formData.public_name,
-        bio: formData.bio || undefined,
-        profile_photo: formData.profile_photo || undefined,
-        is_public: formData.is_public,
-        booking_enabled: formData.booking_enabled,
-      };
+      const payload = new FormData();
+
+      payload.append('slug', formData.slug);
+      payload.append('public_name', formData.public_name);
+      payload.append('bio', formData.bio || '');
+      payload.append('is_public', formData.is_public ? '1' : '0');
+      payload.append(
+        'booking_enabled',
+        formData.booking_enabled ? '1' : '0'
+      );
+
+      if (selectedFile) {
+        payload.append('profile_photo', selectedFile);
+      }
+
+      if (removePhoto) {
+        payload.append('remove_profile_photo', '1');
+      }
 
       if (isEditMode) {
         await updateProfessionalProfile(payload);
@@ -95,6 +136,44 @@ export function ProfessionalProfileForm({
 
   return (
     <form className="profile-form" onSubmit={handleSubmit(onSubmit)}>
+      <div className="profile-photo-section">
+        <div className="profile-photo-wrapper">
+          {finalPreview ? (
+            <img
+              src={finalPreview}
+              alt="Preview da foto de perfil"
+              className="profile-photo-preview"
+            />
+          ) : (
+            <div className="profile-photo-placeholder">
+              <span>Sem foto</span>
+            </div>
+          )}
+        </div>
+
+        <div className="profile-photo-actions">
+          <label className="upload-button">
+            Selecionar foto
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/jpg,image/webp"
+              className="hidden-file-input"
+              onChange={handleFileChange}
+            />
+          </label>
+
+          {finalPreview && (
+            <button
+              type="button"
+              className="ghost-button"
+              onClick={removeSelectedPhoto}
+            >
+              Remover
+            </button>
+          )}
+        </div>
+      </div>
+
       <div className="form-grid">
         <div className="form-field">
           <label className="form-label" htmlFor="public_name">
@@ -123,20 +202,6 @@ export function ProfessionalProfileForm({
             <span className="form-error">{errors.slug.message}</span>
           )}
         </div>
-      </div>
-
-      <div className="form-field">
-        <label className="form-label" htmlFor="profile_photo">
-          URL da foto de perfil
-        </label>
-        <Input
-          id="profile_photo"
-          placeholder="https://exemplo.com/foto.jpg"
-          {...register('profile_photo')}
-        />
-        {errors.profile_photo && (
-          <span className="form-error">{errors.profile_photo.message}</span>
-        )}
       </div>
 
       <div className="form-field">
