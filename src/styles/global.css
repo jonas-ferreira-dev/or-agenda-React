@@ -1,7 +1,7 @@
 :root {
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
-  color: #111827;
+  color: #0685a7;
   background: #f3f4f6;
   line-height: 1.5;
   font-weight: 400;
@@ -21,6 +21,14 @@ body,
 body {
   background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
   color: #111827;
+}
+
+ .page-title{
+  color: #0685a7;
+}
+
+h2{
+  color: #0685a7;
 }
 
 a {
@@ -67,10 +75,13 @@ input {
   margin-bottom: 14px;
 }
 
+
+
 .auth-brand h1 {
   margin: 0 0 8px;
   font-size: 30px;
   line-height: 1.1;
+  color: #0685a7;
 }
 
 .auth-brand p {
@@ -121,7 +132,7 @@ input {
   height: 48px;
   border: 0;
   border-radius: 14px;
-  background: #111827;
+  background: #0685a7;
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;
@@ -163,7 +174,7 @@ input {
   margin: 0;
   font-size: 20px;
   font-weight: 800;
-  color: #111827;
+  color: #0685a7;
 }
 
 .sidebar-subtitle {
@@ -188,7 +199,7 @@ input {
 .sidebar-link:hover,
 .sidebar-link.active {
   background: #f3f4f6;
-  color: #111827;
+  color: #0685a7;
 }
 
 .app-content {
@@ -224,7 +235,7 @@ input {
   border-radius: 12px;
   border: 1px solid #d1d5db;
   background: #ffffff;
-  color: #111827;
+  color: #0685a7;
   cursor: pointer;
   font-weight: 600;
 }
@@ -439,7 +450,7 @@ input {
 
 .ui-textarea:focus {
   outline: none;
-  border-color: #111827;
+  border-color: #0685a7;
   box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.08);
 }
 
@@ -462,7 +473,7 @@ input {
 
 .ui-select:focus {
   outline: none;
-  border-color: #111827;
+  border-color: #0685a7;
   box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.08);
 }
 
@@ -989,7 +1000,7 @@ input {
   font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: #0f172a;
+  color: #0685a7;
 }
 
 .sidebar-subtitle {
@@ -1009,7 +1020,7 @@ input {
   align-items: center;
   padding: 0 14px;
   border-radius: 14px;
-  color: #0f172a;
+  color: #0685a7;
   font-weight: 600;
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
@@ -1020,7 +1031,7 @@ input {
 
 .sidebar-link.active {
   background: #e8eefc;
-  color: #0f172a;
+  color: #0685a7;
 }
 
 .sidebar-footer {
@@ -1063,7 +1074,7 @@ input {
   font-size: 32px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: #111827;
+  color: #0685a7;
 }
 
 .topbar-subtitle {
@@ -1098,7 +1109,7 @@ input {
   border-radius: 12px;
   border: 1px solid #d1d5db;
   background: #ffffff;
-  color: #111827;
+  color: #b60505;
   cursor: pointer;
   font-weight: 600;
   display: inline-flex;
@@ -1246,7 +1257,7 @@ input {
   font-size: 38px;
   line-height: 1.1;
   letter-spacing: -0.02em;
-  color: #0f172a;
+  color: #0685a7;
 }
 
 .profile-card-header.centered p {
