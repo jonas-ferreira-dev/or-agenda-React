@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import { getPublicProfessional } from '../services/get-public-professional';
 import { listPublicServices } from '../services/list-public-services';
-import { PublicBookingForm } from '../components/public-booking-form';
+import { PublicBookingChat } from '../components/public-booking-chat';
 import type { PublicProfessional, PublicService } from '../types/public-booking';
 
 function buildProfilePhotoUrl(profilePhoto: string | null) {
@@ -109,11 +109,11 @@ export function PublicBookingPage() {
         </section>
 
         <section className="public-card">
-          <PublicBookingForm
-            slug={slug}
-            professional={professional}
-            services={services}
-          />
+        <PublicBookingChat
+          slug={slug}
+          professional={professional}
+          services={services}
+        />
         </section>
       </div>
     </main>

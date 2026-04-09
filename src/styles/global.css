@@ -855,3 +855,103 @@ input {
     font-size: 28px;
   }
 }
+
+.booking-chat-shell {
+  display: grid;
+  gap: 20px;
+}
+
+.booking-chat-messages {
+  display: grid;
+  gap: 12px;
+}
+
+.booking-chat-bubble {
+  max-width: 80%;
+  padding: 14px 16px;
+  border-radius: 18px;
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+.booking-chat-bubble.bot {
+  background: #f3f4f6;
+  color: #111827;
+  justify-self: start;
+  border-top-left-radius: 8px;
+}
+
+.booking-chat-bubble.user {
+  background: #111827;
+  color: #ffffff;
+  justify-self: end;
+  border-top-right-radius: 8px;
+}
+
+.booking-chat-footer {
+  display: grid;
+  gap: 12px;
+}
+
+.chat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chat-quick-reply {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid #111827;
+  background: #111827;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.chat-quick-reply.secondary {
+  background: #ffffff;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+.chat-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.chat-panel.input-panel {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.chat-helper-text {
+  margin: 0;
+  color: #6b7280;
+}
+
+.chat-summary {
+  display: grid;
+  gap: 10px;
+}
+
+.chat-summary div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .booking-chat-bubble {
+    max-width: 92%;
+  }
+
+  .chat-panel.input-panel {
+    grid-template-columns: 1fr;
+  }
+}
