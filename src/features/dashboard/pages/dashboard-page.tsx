@@ -3,7 +3,7 @@ export function DashboardPage() {
     <div className="dashboard-grid">
 
       <div className="dashboard-card">
-        <span className="dashboard-card-label">Next module</span>
+        <span className="dashboard-card-label">Gerencie agendamentos</span>
         <h2>Agendamentos</h2>
         <p>
           Gerencie seus agendamentos.
@@ -11,7 +11,7 @@ export function DashboardPage() {
       </div>
 
       <div className="dashboard-card">
-        <span className="dashboard-card-label">Backend integration</span>
+        <span className="dashboard-card-label">Controle seus serviços</span>
         <h2>Serviços</h2>
         <p>
           Gerencie seus serviços.
