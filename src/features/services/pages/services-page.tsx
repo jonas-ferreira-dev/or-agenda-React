@@ -1,5 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { Button } from '@/shared/components/ui/button';
 import { listServices } from '../services/list-services';
@@ -8,34 +13,43 @@ import { ServiceForm } from '../components/service-form';
 import { ServicesTable } from '../components/services-table';
 import type { Service } from '../types/service';
 
+const SERVICES_QUERY_KEY = ['services'];
+
 export function ServicesPage() {
-  const [services, setServices] = useState<Service[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [pageError, setPageError] = useState('');
+  const queryClient = useQueryClient();
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
 
-  async function loadServices() {
-    try {
-      setIsLoading(true);
-      setPageError('');
+  const {
+    data,
+    isLoading,
+    isFetching,
+    error,
+  } = useQuery({
+    queryKey: SERVICES_QUERY_KEY,
+    queryFn: () => listServices(),
+    staleTime: 1000 * 60 * 5,
+  });
 
-      const response = await listServices();
-      setServices(response.data);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        setPageError(error.response?.data?.message || 'Erro ao carregar serviços.');
-      } else {
-        setPageError('Erro inesperado ao carregar serviços.');
-      }
-    } finally {
-      setIsLoading(false);
+  const deleteMutation = useMutation({
+    mutationFn: (serviceId: number) => deleteService(serviceId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SERVICES_QUERY_KEY });
+    },
+  });
+
+  const services = data?.data ?? [];
+
+  function getPageErrorMessage() {
+    if (!error) return '';
+
+    if (axios.isAxiosError(error)) {
+      return error.response?.data?.message || 'Erro ao carregar serviços.';
     }
-  }
 
-  useEffect(() => {
-    loadServices();
-  }, []);
+    return 'Erro inesperado ao carregar serviços.';
+  }
 
   function handleCreate() {
     setSelectedService(null);
@@ -53,11 +67,10 @@ export function ServicesPage() {
     if (!confirmed) return;
 
     try {
-      await deleteService(service.id);
-      await loadServices();
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        alert(error.response?.data?.message || 'Erro ao excluir serviço.');
+      await deleteMutation.mutateAsync(service.id);
+    } catch (mutationError) {
+      if (axios.isAxiosError(mutationError)) {
+        alert(mutationError.response?.data?.message || 'Erro ao excluir serviço.');
         return;
       }
 
@@ -68,13 +81,16 @@ export function ServicesPage() {
   async function handleFormSuccess() {
     setIsFormOpen(false);
     setSelectedService(null);
-    await loadServices();
+
+    await queryClient.invalidateQueries({ queryKey: SERVICES_QUERY_KEY });
   }
 
   function handleCloseForm() {
     setIsFormOpen(false);
     setSelectedService(null);
   }
+
+  const pageError = getPageErrorMessage();
 
   return (
     <div className="content-stack">
@@ -97,11 +113,19 @@ export function ServicesPage() {
           <p>Carregando serviços...</p>
         </div>
       ) : (
-        <ServicesTable
-          services={services}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <>
+          {isFetching && (
+            <div className="table-card">
+              <p>Atualizando lista...</p>
+            </div>
+          )}
+
+          <ServicesTable
+            services={services}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </>
       )}
 
       {isFormOpen && (

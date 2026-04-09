@@ -1,112 +1,123 @@
-import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { ProfessionalProfileForm } from '../components/professional-profile-form';
 import { getProfessionalProfile } from '../services/get-professional-profile';
 import type { ProfessionalProfile } from '../types/professional-profile';
 
+const PROFESSIONAL_PROFILE_QUERY_KEY = ['professional-profile'];
+
 export function ProfessionalProfilePage() {
-  const [profile, setProfile] = useState<ProfessionalProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [pageError, setPageError] = useState('');
-  const [profileNotFound, setProfileNotFound] = useState(false);
+  const queryClient = useQueryClient();
 
-  async function loadProfile() {
-    try {
-      setIsLoading(true);
-      setPageError('');
-      setProfileNotFound(false);
+  const {
+    data,
+    isLoading,
+    isFetching,
+    error,
+  } = useQuery({
+    queryKey: PROFESSIONAL_PROFILE_QUERY_KEY,
+    queryFn: () => getProfessionalProfile(),
+    retry: false,
+    staleTime: 1000 * 60 * 5,
+  });
 
-      const response = await getProfessionalProfile();
-      setProfile(response.data);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          setProfile(null);
-          setProfileNotFound(true);
-          return;
-        }
+  const profile: ProfessionalProfile | null = data?.data ?? null;
 
-        setPageError(
-          error.response?.data?.message ||
-            'Erro ao carregar perfil profissional.'
-        );
-        return;
-      }
+  const profileNotFound =
+    axios.isAxiosError(error) && error.response?.status === 404;
 
-      setPageError('Erro inesperado ao carregar perfil profissional.');
-    } finally {
-      setIsLoading(false);
+  function getPageErrorMessage() {
+    if (!error || profileNotFound) return '';
+
+    if (axios.isAxiosError(error)) {
+      return (
+        error.response?.data?.message || 'Erro ao carregar perfil profissional.'
+      );
     }
+
+    return 'Erro inesperado ao carregar perfil profissional.';
   }
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
+  async function handleFormSuccess() {
+    await queryClient.invalidateQueries({
+      queryKey: PROFESSIONAL_PROFILE_QUERY_KEY,
+    });
+  }
+
+  const pageError = getPageErrorMessage();
 
   return (
-    <div className="content-stack">
-      <div className="page-header">
-        <div>
-          <span className="section-badge">Perfil</span>
-          <h1 className="page-title">Perfil profissional</h1>
-          <p className="page-description">
-            Configure seu perfil público e controle a disponibilidade para
-            agendamentos.
-          </p>
-        </div>
-      </div>
+    <div className="profile-page-shell">
+      <div className="profile-page-container">
+        {pageError && <p className="server-error">{pageError}</p>}
 
-      {pageError && <p className="server-error">{pageError}</p>}
+        {isLoading ? (
+          <div className="profile-card">
+            <p>Carregando perfil profissional...</p>
+          </div>
+        ) : (
+          <div className="profile-card profile-card-centered">
+            {isFetching && (
+              <div className="profile-refresh-state">
+                <p>Atualizando perfil...</p>
+              </div>
+            )}
 
-      {isLoading ? (
-        <div className="table-card">
-          <p>Carregando perfil profissional...</p>
-        </div>
-      ) : (
-        <div className="profile-card">
-          <div className="profile-card-header">
-            <div>
-              <h2>
-                {profileNotFound ? 'Criar perfil profissional' : 'Editar perfil'}
-              </h2>
+            <div className="profile-card-header centered">
+              <span className="section-badge">Perfil profissional</span>
+              <h1>
+                {profileNotFound
+                  ? 'Criar perfil profissional'
+                  : 'Editar perfil profissional'}
+              </h1>
               <p>
                 {profileNotFound
-                  ? 'Você ainda não possui um perfil profissional cadastrado.'
-                  : 'Atualize os dados públicos do seu perfil.'}
+                  ? 'Preencha os dados para criar seu perfil público.'
+                  : 'Atualize suas informações públicas de forma simples e organizada.'}
               </p>
             </div>
+
+            <ProfessionalProfileForm
+              profile={profile}
+              onSuccess={handleFormSuccess}
+            />
+
+            {profile && (
+              <div className="profile-preview modern">
+                <div className="profile-preview-header">
+                  <h3>Prévia pública</h3>
+                  <span className="profile-preview-slug">/{profile.slug}</span>
+                </div>
+
+                <div className="profile-preview-grid">
+                  <div>
+                    <strong>Nome público</strong>
+                    <span>{profile.public_name}</span>
+                  </div>
+
+                  <div>
+                    <strong>Perfil público</strong>
+                    <span>{profile.is_public ? 'Ativo' : 'Oculto'}</span>
+                  </div>
+
+                  <div>
+                    <strong>Agendamento</strong>
+                    <span>
+                      {profile.booking_enabled ? 'Disponível' : 'Desativado'}
+                    </span>
+                  </div>
+
+                  <div>
+                    <strong>Biografia</strong>
+                    <span>{profile.bio || '-'}</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-
-          <ProfessionalProfileForm profile={profile} onSuccess={loadProfile} />
-
-          {profile && (
-            <div className="profile-preview">
-              <h3>Prévia pública</h3>
-              <p>
-                <strong>Nome público:</strong> {profile.public_name}
-              </p>
-              <p>
-                <strong>Slug:</strong> /{profile.slug}
-              </p>
-              <p>
-                <strong>Perfil público:</strong>{' '}
-                {profile.is_public ? 'Sim' : 'Não'}
-              </p>
-              <p>
-                <strong>Agendamento ativo:</strong>{' '}
-                {profile.booking_enabled ? 'Sim' : 'Não'}
-              </p>
-              <p>
-                <strong>Biografia:</strong> {profile.bio || '-'}
-              </p>
-              <p>
-                <strong>Foto:</strong> {profile.profile_photo || '-'}
-              </p>
-            </div>
-          )}
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -1,5 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { Button } from '@/shared/components/ui/button';
 import { listAppointments } from '../services/list-appointments';
@@ -13,47 +18,68 @@ import { listServices } from '@/features/services/services/list-services';
 import type { Client } from '@/features/clients/types/client';
 import type { Service } from '@/features/services/types/service';
 
+const APPOINTMENTS_QUERY_KEY = ['appointments'];
+const APPOINTMENT_FORM_CLIENTS_QUERY_KEY = ['appointment-form-clients'];
+const APPOINTMENT_FORM_SERVICES_QUERY_KEY = ['appointment-form-services'];
+
 export function AppointmentsPage() {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [pageError, setPageError] = useState('');
+  const queryClient = useQueryClient();
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
 
-  async function loadPageData() {
-    try {
-      setIsLoading(true);
-      setPageError('');
+  const {
+    data: appointmentsData,
+    isLoading,
+    isFetching,
+    error,
+  } = useQuery({
+    queryKey: APPOINTMENTS_QUERY_KEY,
+    queryFn: () => listAppointments(),
+    staleTime: 1000 * 60 * 2,
+  });
 
-      const [appointmentsResponse, clientsResponse, servicesResponse] =
-        await Promise.all([
-          listAppointments(),
-          listClients(1, 100),
-          listServices(1, 100),
-        ]);
+  const {
+    data: clientsData,
+    isLoading: isLoadingClients,
+  } = useQuery({
+    queryKey: APPOINTMENT_FORM_CLIENTS_QUERY_KEY,
+    queryFn: () => listClients(1, 100),
+    enabled: isFormOpen,
+    staleTime: 1000 * 60 * 5,
+  });
 
-      setAppointments(appointmentsResponse.data);
-      setClients(clientsResponse.data);
-      setServices(servicesResponse.data);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        setPageError(
-          error.response?.data?.message || 'Erro ao carregar agendamentos.'
-        );
-      } else {
-        setPageError('Erro inesperado ao carregar agendamentos.');
-      }
-    } finally {
-      setIsLoading(false);
+  const {
+    data: servicesData,
+    isLoading: isLoadingServices,
+  } = useQuery({
+    queryKey: APPOINTMENT_FORM_SERVICES_QUERY_KEY,
+    queryFn: () => listServices(1, 100),
+    enabled: isFormOpen,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (appointmentId: number) => deleteAppointment(appointmentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: APPOINTMENTS_QUERY_KEY });
+    },
+  });
+
+  const appointments = appointmentsData?.data ?? [];
+  const clients: Client[] = clientsData?.data ?? [];
+  const services: Service[] = servicesData?.data ?? [];
+
+  function getPageErrorMessage() {
+    if (!error) return '';
+
+    if (axios.isAxiosError(error)) {
+      return error.response?.data?.message || 'Erro ao carregar agendamentos.';
     }
-  }
 
-  useEffect(() => {
-    loadPageData();
-  }, []);
+    return 'Erro inesperado ao carregar agendamentos.';
+  }
 
   function handleCreate() {
     setSelectedAppointment(null);
@@ -73,11 +99,12 @@ export function AppointmentsPage() {
     if (!confirmed) return;
 
     try {
-      await deleteAppointment(appointment.id);
-      await loadPageData();
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        alert(error.response?.data?.message || 'Erro ao excluir agendamento.');
+      await deleteMutation.mutateAsync(appointment.id);
+    } catch (mutationError) {
+      if (axios.isAxiosError(mutationError)) {
+        alert(
+          mutationError.response?.data?.message || 'Erro ao excluir agendamento.'
+        );
         return;
       }
 
@@ -88,13 +115,17 @@ export function AppointmentsPage() {
   async function handleFormSuccess() {
     setIsFormOpen(false);
     setSelectedAppointment(null);
-    await loadPageData();
+
+    await queryClient.invalidateQueries({ queryKey: APPOINTMENTS_QUERY_KEY });
   }
 
   function handleCloseForm() {
     setIsFormOpen(false);
     setSelectedAppointment(null);
   }
+
+  const pageError = getPageErrorMessage();
+  const isFormDataLoading = isLoadingClients || isLoadingServices;
 
   return (
     <div className="content-stack">
@@ -117,11 +148,19 @@ export function AppointmentsPage() {
           <p>Carregando agendamentos...</p>
         </div>
       ) : (
-        <AppointmentsTable
-          appointments={appointments}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <>
+          {isFetching && (
+            <div className="table-card">
+              <p>Atualizando lista...</p>
+            </div>
+          )}
+
+          <AppointmentsTable
+            appointments={appointments}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </>
       )}
 
       {isFormOpen && (
@@ -144,13 +183,19 @@ export function AppointmentsPage() {
               </button>
             </div>
 
-            <AppointmentForm
-              appointment={selectedAppointment}
-              clients={clients}
-              services={services}
-              onSuccess={handleFormSuccess}
-              onCancel={handleCloseForm}
-            />
+            {isFormDataLoading ? (
+              <div className="table-card">
+                <p>Carregando dados do formulário...</p>
+              </div>
+            ) : (
+              <AppointmentForm
+                appointment={selectedAppointment}
+                clients={clients}
+                services={services}
+                onSuccess={handleFormSuccess}
+                onCancel={handleCloseForm}
+              />
+            )}
           </div>
         </div>
       )}

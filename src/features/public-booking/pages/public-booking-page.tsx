@@ -88,7 +88,7 @@ export function PublicBookingPage() {
   return (
     <main className="public-page">
       <div className="public-container">
-        <section className="public-hero">
+      <section className="public-hero centered">
           {photoUrl ? (
             <img
               src={photoUrl}
@@ -101,12 +101,12 @@ export function PublicBookingPage() {
             </div>
           )}
 
-          <div className="public-hero-content">
+          <div className="public-hero-content centered">
             <span className="section-badge">Agendamento online</span>
             <h1>{professional.public_name}</h1>
             <p>{professional.bio || 'Escolha um serviço e agende seu horário.'}</p>
           </div>
-        </section>
+      </section>
 
         <section className="public-card">
         <PublicBookingChat

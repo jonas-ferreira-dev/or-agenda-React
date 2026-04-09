@@ -1,5 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { Button } from '@/shared/components/ui/button';
 import { listClients } from '../services/list-clients';
@@ -8,34 +13,43 @@ import { ClientForm } from '../components/client-form';
 import { ClientsTable } from '../components/clients-table';
 import type { Client } from '../types/client';
 
+const CLIENTS_QUERY_KEY = ['clients'];
+
 export function ClientsPage() {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [pageError, setPageError] = useState('');
+  const queryClient = useQueryClient();
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
-  async function loadClients() {
-    try {
-      setIsLoading(true);
-      setPageError('');
+  const {
+    data,
+    isLoading,
+    isFetching,
+    error,
+  } = useQuery({
+    queryKey: CLIENTS_QUERY_KEY,
+    queryFn: () => listClients(),
+    staleTime: 1000 * 60 * 5,
+  });
 
-      const response = await listClients();
-      setClients(response.data);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        setPageError(error.response?.data?.message || 'Erro ao carregar clientes.');
-      } else {
-        setPageError('Erro inesperado ao carregar clientes.');
-      }
-    } finally {
-      setIsLoading(false);
+  const deleteMutation = useMutation({
+    mutationFn: (clientId: number) => deleteClient(clientId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CLIENTS_QUERY_KEY });
+    },
+  });
+
+  const clients = data?.data ?? [];
+
+  function getPageErrorMessage() {
+    if (!error) return '';
+
+    if (axios.isAxiosError(error)) {
+      return error.response?.data?.message || 'Erro ao carregar clientes.';
     }
-  }
 
-  useEffect(() => {
-    loadClients();
-  }, []);
+    return 'Erro inesperado ao carregar clientes.';
+  }
 
   function handleCreate() {
     setSelectedClient(null);
@@ -53,11 +67,10 @@ export function ClientsPage() {
     if (!confirmed) return;
 
     try {
-      await deleteClient(client.id);
-      await loadClients();
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        alert(error.response?.data?.message || 'Erro ao excluir cliente.');
+      await deleteMutation.mutateAsync(client.id);
+    } catch (mutationError) {
+      if (axios.isAxiosError(mutationError)) {
+        alert(mutationError.response?.data?.message || 'Erro ao excluir cliente.');
         return;
       }
 
@@ -68,13 +81,16 @@ export function ClientsPage() {
   async function handleFormSuccess() {
     setIsFormOpen(false);
     setSelectedClient(null);
-    await loadClients();
+
+    await queryClient.invalidateQueries({ queryKey: CLIENTS_QUERY_KEY });
   }
 
   function handleCloseForm() {
     setIsFormOpen(false);
     setSelectedClient(null);
   }
+
+  const pageError = getPageErrorMessage();
 
   return (
     <div className="content-stack">
@@ -97,11 +113,19 @@ export function ClientsPage() {
           <p>Carregando clientes...</p>
         </div>
       ) : (
-        <ClientsTable
-          clients={clients}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <>
+          {isFetching && (
+            <div className="table-card">
+              <p>Atualizando lista...</p>
+            </div>
+          )}
+
+          <ClientsTable
+            clients={clients}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </>
       )}
 
       {isFormOpen && (
