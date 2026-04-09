@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Input } from '@/shared/components/ui/input';
 import { Button } from '@/shared/components/ui/button';
-
+import { useNavigate } from 'react-router-dom';
 import {
   publicBookingSchema,
   type PublicBookingSchemaData,
@@ -36,6 +36,7 @@ export function PublicBookingForm({
   const [serverError, setServerError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -109,45 +110,43 @@ export function PublicBookingForm({
   }, [slug, selectedServiceId, selectedDate, resetField]);
 
   const onSubmit: SubmitHandler<PublicBookingSchemaData> = async (formData) => {
-    try {
-      setServerError('');
-      setSuccessMessage('');
+  try {
+    setServerError('');
+    setSuccessMessage('');
 
-      const response = await createPublicAppointment(slug, {
-        name: formData.name,
-        email: formData.email || undefined,
-        phone: formData.phone,
-        service_id: Number(formData.service_id),
-        appointment_date: formData.appointment_date,
-        start_time: formData.start_time,
-        notes: formData.notes || undefined,
-      });
+    const response = await createPublicAppointment(slug, {
+      name: formData.name,
+      email: formData.email || undefined,
+      phone: formData.phone,
+      service_id: Number(formData.service_id),
+      appointment_date: formData.appointment_date,
+      start_time: formData.start_time,
+      notes: formData.notes || undefined,
+    });
 
-      setSuccessMessage(response.message);
-
-      reset({
-        name: '',
-        email: '',
-        phone: '',
-        service_id: '',
-        appointment_date: '',
-        start_time: '',
-        notes: '',
-      });
-
-      setAvailability(null);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        setServerError(
-          error.response?.data?.message ||
-            'Não foi possível concluir o agendamento.'
-        );
-        return;
-      }
-
-      setServerError('Erro inesperado ao concluir o agendamento.');
+    navigate(`/agendar/${slug}/sucesso`, {
+      replace: true,
+      state: {
+        message: response.message || 'Agendamento realizado com sucesso.',
+        professionalName: professional.public_name,
+        serviceName: selectedService?.name ?? '',
+        appointmentDate: formData.appointment_date,
+        startTime: formData.start_time,
+        clientName: formData.name,
+      },
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      setServerError(
+        error.response?.data?.message ||
+          'Não foi possível concluir o agendamento.'
+      );
+      return;
     }
-  };
+
+    setServerError('Erro inesperado ao concluir o agendamento.');
+  }
+};
 
   if (!professional.booking_enabled) {
     return (
