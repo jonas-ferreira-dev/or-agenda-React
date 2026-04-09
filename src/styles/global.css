@@ -649,3 +649,135 @@ input {
     align-items: flex-start;
   }
 }
+
+.public-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+  padding: 40px 20px;
+}
+
+.public-container {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  display: grid;
+  gap: 24px;
+}
+
+.public-hero {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+}
+
+.public-profile-photo,
+.public-profile-photo-placeholder {
+  width: 84px;
+  height: 84px;
+  border-radius: 999px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.public-profile-photo-placeholder {
+  display: grid;
+  place-items: center;
+  background: #e5e7eb;
+  color: #111827;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.public-hero-content h1 {
+  margin: 8px 0;
+  font-size: 32px;
+}
+
+.public-hero-content p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.public-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+}
+
+.public-booking-form {
+  display: grid;
+  gap: 24px;
+}
+
+.public-form-section {
+  display: grid;
+  gap: 16px;
+}
+
+.public-form-section h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.public-helper-text {
+  margin: 0;
+  color: #6b7280;
+}
+
+.public-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 12px;
+}
+
+.public-slot-button {
+  height: 44px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #111827;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.public-slot-button.selected {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.public-empty-state {
+  padding: 24px;
+  border: 1px dashed #d1d5db;
+  border-radius: 20px;
+  background: #ffffff;
+}
+
+.public-empty-state h1,
+.public-empty-state h3,
+.public-empty-state p {
+  margin-top: 0;
+}
+
+.public-success-message {
+  color: #047857;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .public-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .public-hero-content h1 {
+    font-size: 28px;
+  }
+}

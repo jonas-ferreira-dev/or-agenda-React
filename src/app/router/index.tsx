@@ -5,6 +5,7 @@ import { ClientsPage } from '@/features/clients/pages/clients-page';
 import { ServicesPage } from '@/features/services/pages/services-page';
 import { AppointmentsPage } from '@/features/appointments/pages/appointments-page';
 import { ProfessionalProfilePage } from '@/features/professional-profile/pages/professional-profile-page';
+import { PublicBookingPage } from '@/features/public-booking/pages/public-booking-page';
 import { ProtectedRoute } from './protected-route';
 import { AppShell } from '@/shared/components/layout/app-shell';
 
@@ -13,6 +14,10 @@ export const router = createBrowserRouter([
     path: '/',
     element: <Navigate to="/dashboard" replace />,
   },
+   {
+            path: '/agendar/:slug',
+            element: <PublicBookingPage />,
+   },
   {
     path: '/login',
     element: <LoginPage />,
@@ -43,6 +48,7 @@ export const router = createBrowserRouter([
             path: '/perfil',
             element: <ProfessionalProfilePage />,
           },
+         
         ],
       },
     ],
