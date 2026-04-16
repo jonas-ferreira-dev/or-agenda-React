@@ -1,73 +1,182 @@
-# React + TypeScript + Vite
+# OR Agenda React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Front-end web da **OR Agenda**, desenvolvido em **React** com **TypeScript** e **Vite**, voltado para o fluxo público de agendamento online.
 
-Currently, two official plugins are available:
+A aplicação consome a API da plataforma para exibir a página de agendamento de cada estabelecimento a partir de uma rota pública com **slug**, permitindo que o cliente escolha um serviço e inicie o processo de marcação de horário de forma simples e direta.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Demonstração
 
-## React Compiler
+Página publicada de exemplo:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**João Studio**  
+https://olive-lion-189528.hostingersite.com/agendar/joao-studio
 
-## Expanding the ESLint configuration
+Exemplo de rota pública:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+/agendar/joao-studio
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Sobre o projeto
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Este repositório representa a camada de interface da OR Agenda para o agendamento público. Pelo material enviado, o fluxo atual foi estruturado para oferecer uma experiência clara para o cliente final, com foco em:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- identificação visual do estabelecimento
+- início rápido do atendimento
+- seleção de serviço
+- interface objetiva e responsiva
+- integração com a API de agendamentos
+
+A implementação exibida no link usa o estabelecimento **João Studio** como exemplo real de publicação.
+
+## Funcionalidades
+
+- Página pública de agendamento por slug
+- Interface amigável para início do atendimento
+- Exibição de identidade visual do estabelecimento
+- Seleção de serviços disponíveis
+- Estrutura pronta para integração com a API da OR Agenda
+- Configuração por variáveis de ambiente
+- Build otimizada para produção
+
+## Tecnologias utilizadas
+
+Com base na estrutura do repositório, o projeto foi desenvolvido com:
+
+- **React**
+- **TypeScript**
+- **Vite**
+- **ESLint**
+- **Variáveis de ambiente com `.env`**
+
+## Estrutura do repositório
+
+A estrutura principal apresentada no repositório é a seguinte:
+
+```bash
+.
+├── public/
+├── src/
+├── .env
+├── .gitignore
+├── README.md
+├── eslint.config.js
+├── index.html
+├── package-lock.json
+├── package.json
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
 ```
+
+### Organização geral
+
+- `public/`: arquivos estáticos
+- `src/`: componentes, páginas, serviços, hooks e demais arquivos da aplicação
+- `.env`: variáveis de ambiente
+- `vite.config.ts`: configuração do Vite
+- `eslint.config.js`: regras de lint
+
+## Como executar o projeto localmente
+
+> Como o conteúdo completo do `package.json` não foi aberto aqui, os comandos abaixo seguem o padrão mais comum para projetos em **Vite + React + TypeScript**.
+
+### 1. Clonar o repositório
+
+```bash
+git clone <URL_DO_REPOSITORIO>
+cd <NOME_DO_REPOSITORIO>
+```
+
+### 2. Instalar as dependências
+
+```bash
+npm install
+```
+
+### 3. Configurar o arquivo `.env`
+
+Exemplo:
+
+```env
+VITE_API_URL=http://localhost:8000/api
+```
+
+> Ajuste a URL conforme o endereço da sua API.
+
+### 4. Executar em ambiente de desenvolvimento
+
+```bash
+npm run dev
+```
+
+### 5. Gerar build de produção
+
+```bash
+npm run build
+```
+
+## Integração com a API
+
+O front-end foi pensado para funcionar em conjunto com a **API da OR Agenda**, centralizando no back-end as regras de negócio relacionadas aos agendamentos.
+
+Entre os dados que normalmente podem ser carregados pela API, estão:
+
+- dados públicos do estabelecimento
+- serviços disponíveis
+- horários e datas disponíveis
+- informações do profissional ou empresa
+- criação de novos agendamentos
+- validações de disponibilidade
+
+## Publicação
+
+Como o projeto já foi publicado em ambiente de hospedagem compartilhada, o fluxo de deploy pode seguir um formato simples:
+
+### Build
+
+```bash
+npm run build
+```
+
+### Upload
+
+Após a build, envie o conteúdo da pasta `dist/` para a hospedagem.
+
+### Suporte a rotas do React
+
+Se a aplicação utilizar rotas internas no front-end, pode ser necessário adicionar um `.htaccess` para evitar erro 404 ao recarregar a página.
+
+Exemplo:
+
+```apache
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+```
+
+### Observação
+
+Se o projeto for publicado em subpasta, como por exemplo:
+
+```bash
+/agendar/
+```
+
+pode ser necessário ajustar:
+
+- o `base` no `vite.config.ts`
+- o `RewriteBase` no `.htaccess`
+- os caminhos de assets
+- a URL base da API no `.env`
+
+
+## Autor
+
+Desenvolvido por **Jonas Ferreira**.
