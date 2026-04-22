@@ -44,7 +44,6 @@ export function PublicBookingForm({
     watch,
     setValue,
     resetField,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<PublicBookingSchemaData>({
     resolver: zodResolver(publicBookingSchema),
