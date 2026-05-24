@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import orAgendaLogo from '@/assets/or-agenda-logo.png';
 
-const whatsappNumber = '5521999999999';
+const whatsappNumber = '5521988153770';
 
 const whatsappMessage = encodeURIComponent(
   'Olá! Quero conhecer o OR Agenda e criar uma agenda online para meu negócio.'

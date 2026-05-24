@@ -1,6 +1,6 @@
 // src/features/landing/components/landing-pricing-section.tsx
 
-const whatsappNumber = '5521999999999';
+const whatsappNumber = '5521988153770';
 
 const whatsappMessage = encodeURIComponent(
   'Olá! Quero começar com o OR Agenda Start de R$ 59,90/mês.'
