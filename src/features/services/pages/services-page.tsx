@@ -11,15 +11,23 @@ import { listServices } from '../services/list-services';
 import { deleteService } from '../services/delete-service';
 import { ServiceForm } from '../components/service-form';
 import { ServicesTable } from '../components/services-table';
+import { ServiceFilters } from '../components/service-filters';
 import type { Service } from '../types/service';
+import type { ServiceFilters as ServiceFiltersType } from '../types/service-filters';
 
 const SERVICES_QUERY_KEY = ['services'];
+
+const INITIAL_FILTERS: ServiceFiltersType = {
+  search: '',
+  active: '',
+};
 
 export function ServicesPage() {
   const queryClient = useQueryClient();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [filters, setFilters] = useState<ServiceFiltersType>(INITIAL_FILTERS);
 
   const {
     data,
@@ -27,8 +35,8 @@ export function ServicesPage() {
     isFetching,
     error,
   } = useQuery({
-    queryKey: SERVICES_QUERY_KEY,
-    queryFn: () => listServices(),
+    queryKey: [...SERVICES_QUERY_KEY, filters],
+    queryFn: () => listServices(filters),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -90,6 +98,10 @@ export function ServicesPage() {
     setSelectedService(null);
   }
 
+  function handleClearFilters() {
+    setFilters(INITIAL_FILTERS);
+  }
+
   const pageError = getPageErrorMessage();
 
   return (
@@ -105,6 +117,12 @@ export function ServicesPage() {
 
         <Button onClick={handleCreate}>Novo serviço</Button>
       </div>
+
+      <ServiceFilters
+        filters={filters}
+        onChange={setFilters}
+        onClear={handleClearFilters}
+      />
 
       {pageError && <p className="server-error">{pageError}</p>}
 

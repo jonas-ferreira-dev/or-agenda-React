@@ -11,7 +11,9 @@ import { listAppointments } from '../services/list-appointments';
 import { deleteAppointment } from '../services/delete-appointment';
 import { AppointmentForm } from '../components/appointment-form';
 import { AppointmentsTable } from '../components/appointments-table';
+import { AppointmentFilters } from '../components/appointment-filters';
 import type { Appointment } from '../types/appointment';
+import type { AppointmentFilters as AppointmentFiltersType } from '../types/appointment-filters';
 
 import { listClients } from '@/features/clients/services/list-clients';
 import { listServices } from '@/features/services/services/list-services';
@@ -22,12 +24,19 @@ const APPOINTMENTS_QUERY_KEY = ['appointments'];
 const APPOINTMENT_FORM_CLIENTS_QUERY_KEY = ['appointment-form-clients'];
 const APPOINTMENT_FORM_SERVICES_QUERY_KEY = ['appointment-form-services'];
 
+const INITIAL_FILTERS: AppointmentFiltersType = {
+  search: '',
+  status: '',
+  date: '',
+};
+
 export function AppointmentsPage() {
   const queryClient = useQueryClient();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
+  const [filters, setFilters] = useState<AppointmentFiltersType>(INITIAL_FILTERS);
 
   const {
     data: appointmentsData,
@@ -35,8 +44,8 @@ export function AppointmentsPage() {
     isFetching,
     error,
   } = useQuery({
-    queryKey: APPOINTMENTS_QUERY_KEY,
-    queryFn: () => listAppointments(),
+    queryKey: [...APPOINTMENTS_QUERY_KEY, filters],
+    queryFn: () => listAppointments(filters),
     staleTime: 1000 * 60 * 2,
   });
 
@@ -124,6 +133,10 @@ export function AppointmentsPage() {
     setSelectedAppointment(null);
   }
 
+  function handleClearFilters() {
+    setFilters(INITIAL_FILTERS);
+  }
+
   const pageError = getPageErrorMessage();
   const isFormDataLoading = isLoadingClients || isLoadingServices;
 
@@ -140,6 +153,12 @@ export function AppointmentsPage() {
 
         <Button onClick={handleCreate}>Novo agendamento</Button>
       </div>
+
+      <AppointmentFilters
+        filters={filters}
+        onChange={setFilters}
+        onClear={handleClearFilters}
+      />
 
       {pageError && <p className="server-error">{pageError}</p>}
 

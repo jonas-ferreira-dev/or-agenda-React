@@ -1,13 +1,35 @@
 import { api } from '@/services/api/client';
-import type { AppointmentsListResponse } from '../types/appointment';
+import type { Appointment } from '../types/appointment';
+import type { AppointmentFilters } from '../types/appointment-filters';
 
-export async function listAppointments(page = 1, perPage = 15) {
-  const { data } = await api.get<AppointmentsListResponse>('/appointments', {
+type ListAppointmentsResponse = {
+  message: string;
+  data: Appointment[];
+  meta: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    from: number | null;
+    to: number | null;
+  };
+};
+
+type ListAppointmentsParams = Partial<AppointmentFilters> & {
+  page?: number;
+  perPage?: number;
+};
+
+export async function listAppointments(params: ListAppointmentsParams = {}) {
+  const response = await api.get<ListAppointmentsResponse>('/appointments', {
     params: {
-      page,
-      per_page: perPage,
+      page: params.page ?? 1,
+      per_page: params.perPage ?? 15,
+      search: params.search || undefined,
+      status: params.status || undefined,
+      date: params.date || undefined,
     },
   });
 
-  return data;
+  return response.data;
 }

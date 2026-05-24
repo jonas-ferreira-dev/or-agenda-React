@@ -11,15 +11,22 @@ import { listClients } from '../services/list-clients';
 import { deleteClient } from '../services/delete-client';
 import { ClientForm } from '../components/client-form';
 import { ClientsTable } from '../components/clients-table';
+import { ClientFilters } from '../components/client-filters';
 import type { Client } from '../types/client';
+import type { ClientFilters as ClientFiltersType } from '../types/client-filters';
 
 const CLIENTS_QUERY_KEY = ['clients'];
+
+const INITIAL_FILTERS: ClientFiltersType = {
+  search: '',
+};
 
 export function ClientsPage() {
   const queryClient = useQueryClient();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [filters, setFilters] = useState<ClientFiltersType>(INITIAL_FILTERS);
 
   const {
     data,
@@ -27,8 +34,8 @@ export function ClientsPage() {
     isFetching,
     error,
   } = useQuery({
-    queryKey: CLIENTS_QUERY_KEY,
-    queryFn: () => listClients(),
+    queryKey: [...CLIENTS_QUERY_KEY, filters],
+    queryFn: () => listClients(filters),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -90,6 +97,10 @@ export function ClientsPage() {
     setSelectedClient(null);
   }
 
+  function handleClearFilters() {
+    setFilters(INITIAL_FILTERS);
+  }
+
   const pageError = getPageErrorMessage();
 
   return (
@@ -105,6 +116,12 @@ export function ClientsPage() {
 
         <Button onClick={handleCreate}>Novo cliente</Button>
       </div>
+
+      <ClientFilters
+        filters={filters}
+        onChange={setFilters}
+        onClear={handleClearFilters}
+      />
 
       {pageError && <p className="server-error">{pageError}</p>}
 
