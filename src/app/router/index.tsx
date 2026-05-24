@@ -9,11 +9,12 @@ import { PublicBookingPage } from '@/features/public-booking/pages/public-bookin
 import { PublicBookingSuccessPage } from '@/features/public-booking/pages/public-booking-success-page';
 import { ProtectedRoute } from './protected-route';
 import { AppShell } from '@/shared/components/layout/app-shell';
+import { LandingPage } from '@/features/landing/pages/landing-page';
 
 export const router = createBrowserRouter([
-  {
+    {
     path: '/',
-    element: <Navigate to="/dashboard" replace />,
+    element: <LandingPage />,
   },
    {
             path: '/agendar/:slug',
