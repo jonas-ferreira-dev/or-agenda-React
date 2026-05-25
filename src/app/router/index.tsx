@@ -12,6 +12,7 @@ import { AppShell } from '@/shared/components/layout/app-shell';
 import { LandingPage } from '@/features/landing/pages/landing-page';
 import { PlatformAdminRoute } from '../../routes/platform-admin-route';
 import { PlatformUsersPage } from '@/features/plataform/users/pages/platform-users-page';
+import { ReportsPage } from '@/features/reports/pages/reports-page';
 
 export const router = createBrowserRouter([
     {
@@ -50,6 +51,10 @@ export const router = createBrowserRouter([
         {
           path: '/agendamentos',
           element: <AppointmentsPage />,
+        },
+        {
+          path: '/relatorios',
+          element: <ReportsPage />,
         },
         {
           path: '/perfil',

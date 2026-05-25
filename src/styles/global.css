@@ -2491,3 +2491,151 @@ body,
     width: 100%;
   }
 }
+
+.reports-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.reports-tab {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reports-tab.active {
+  background: #111827;
+  border-color: #111827;
+  color: #ffffff;
+}
+
+.reports-filters-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.report-print-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.report-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.report-summary-card {
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  display: grid;
+  gap: 8px;
+}
+
+.report-summary-card span {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.report-summary-card strong {
+  color: #111827;
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.report-section-title {
+  margin: 8px 0 14px;
+  color: #111827;
+  font-size: 18px;
+}
+
+.report-table {
+  min-width: 680px;
+}
+
+@media (max-width: 900px) {
+  .reports-filters-grid,
+  .report-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .reports-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .reports-tab {
+    width: 100%;
+  }
+
+  .reports-filters-grid,
+  .report-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-summary-card strong {
+    font-size: 22px;
+  }
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  .sidebar,
+  .topbar,
+  .report-screen-only {
+    display: none !important;
+  }
+
+  .app-shell {
+    display: block !important;
+    min-height: auto !important;
+  }
+
+  .app-content {
+    display: block !important;
+  }
+
+  .page-content {
+    padding: 0 !important;
+  }
+
+  .table-card,
+  .report-print-area {
+    border: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+
+  .responsive-table-wrapper {
+    overflow: visible !important;
+  }
+
+  .data-table,
+  .report-table {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .report-summary-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
