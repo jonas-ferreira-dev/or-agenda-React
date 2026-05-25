@@ -13,6 +13,7 @@ import { LandingPage } from '@/features/landing/pages/landing-page';
 import { PlatformAdminRoute } from '../../routes/platform-admin-route';
 import { PlatformUsersPage } from '@/features/plataform/users/pages/platform-users-page';
 import { ReportsPage } from '@/features/reports/pages/reports-page';
+import { AvailabilitiesPage } from '@/features/availabilities/pages/availabilities-page';
 
 export const router = createBrowserRouter([
     {
@@ -51,6 +52,10 @@ export const router = createBrowserRouter([
         {
           path: '/agendamentos',
           element: <AppointmentsPage />,
+        },
+        {
+          path: '/horarios',
+          element: <AvailabilitiesPage />,
         },
         {
           path: '/relatorios',

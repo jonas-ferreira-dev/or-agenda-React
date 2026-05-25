@@ -8,6 +8,7 @@ const navigationItems = [
   { label: 'Agendamentos', to: '/agendamentos' },
   { label: 'Clientes', to: '/clientes' },
   { label: 'Serviços', to: '/servicos' },
+  { label: 'Horários', to: '/horarios' },
   { label: 'Relatórios', to: '/relatorios' },
   { label: 'Perfil', to: '/perfil' },
 ];

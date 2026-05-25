@@ -2639,3 +2639,129 @@ body,
     grid-template-columns: repeat(3, 1fr) !important;
   }
 }
+
+.availability-help-card {
+  padding: 18px 20px;
+  border-radius: 20px;
+  border: 1px solid #fed7aa;
+  background: #fff7ed;
+  color: #111827;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+}
+
+.availability-help-card strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+.availability-help-card p {
+  margin: 0;
+  color: #7c2d12;
+  line-height: 1.6;
+}
+
+.availability-days-list {
+  display: grid;
+  gap: 16px;
+}
+
+.availability-day-card {
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.availability-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.availability-day-header h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 18px;
+}
+
+.availability-day-header span {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.availability-empty-day {
+  margin: 0;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.availability-blocks {
+  display: grid;
+  gap: 10px;
+}
+
+.availability-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.availability-block.inactive {
+  opacity: 0.65;
+  background: #f3f4f6;
+}
+
+.availability-block strong {
+  display: block;
+  color: #111827;
+}
+
+.availability-block p {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.availability-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.availability-checkbox {
+  padding: 10px 0;
+}
+
+@media (max-width: 760px) {
+  .availability-block {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .availability-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .availability-actions button,
+  .availability-actions .ui-button,
+  .availability-actions .ghost-button {
+    width: 100%;
+  }
+
+  .availability-day-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
