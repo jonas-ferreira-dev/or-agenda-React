@@ -1,7 +1,10 @@
+
+
 export type User = {
   id: number;
   name: string;
   email: string;
+  is_platform_admin: boolean;
   created_at?: string;
   updated_at?: string;
 };
@@ -18,5 +21,5 @@ export type LoginResponse = {
 };
 
 export type MeResponse = {
-  user: User;
+  data: User;
 };

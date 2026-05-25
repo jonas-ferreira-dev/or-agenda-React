@@ -10,6 +10,8 @@ import { PublicBookingSuccessPage } from '@/features/public-booking/pages/public
 import { ProtectedRoute } from './protected-route';
 import { AppShell } from '@/shared/components/layout/app-shell';
 import { LandingPage } from '@/features/landing/pages/landing-page';
+import { PlatformAdminRoute } from '../../routes/platform-admin-route';
+import { PlatformUsersPage } from '@/features/plataform/users/pages/platform-users-page';
 
 export const router = createBrowserRouter([
     {
@@ -27,36 +29,44 @@ export const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />,
-  },
-  {
-    element: <ProtectedRoute />,
-    children: [
-      {
-        element: <AppShell />,
-        children: [
-          {
-            path: '/dashboard',
-            element: <DashboardPage />,
-          },
-          {
-            path: '/clientes',
-            element: <ClientsPage />,
-          },
-          {
-            path: '/servicos',
-            element: <ServicesPage />,
-          },
-          {
-            path: '/agendamentos',
-            element: <AppointmentsPage />,
-          },
-          {
-            path: '/perfil',
-            element: <ProfessionalProfilePage />,
-          },
-         
-        ],
-      },
-    ],
-  },
+  },{
+  element: <ProtectedRoute />,
+  children: [
+    {
+      element: <AppShell />,
+      children: [
+        {
+          path: '/dashboard',
+          element: <DashboardPage />,
+        },
+        {
+          path: '/clientes',
+          element: <ClientsPage />,
+        },
+        {
+          path: '/servicos',
+          element: <ServicesPage />,
+        },
+        {
+          path: '/agendamentos',
+          element: <AppointmentsPage />,
+        },
+        {
+          path: '/perfil',
+          element: <ProfessionalProfilePage />,
+        },
+        {
+          element: <PlatformAdminRoute />,
+          children: [
+            {
+              path: '/plataforma/usuarios',
+              element: <PlatformUsersPage />,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+},
+  
 ]);

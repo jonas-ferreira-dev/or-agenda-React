@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/use-auth';
+import orAgendaLogo from '@/assets/or-agenda-logo.png';
 
 const navigationItems = [
   { label: 'Dashboard', to: '/dashboard' },
@@ -10,8 +11,13 @@ const navigationItems = [
   { label: 'Perfil', to: '/perfil' },
 ];
 
+const platformNavigationItems = [
+  { label: 'Usuários', to: '/plataforma/usuarios' },
+];
+
 export function AppShell() {
   const { user, signOut } = useAuth();
+  const isPlatformAdmin = user?.is_platform_admin === true;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -34,37 +40,60 @@ export function AppShell() {
     setIsMobileMenuOpen(false);
   }
 
-  return (
-    <div className="app-shell">
-      {isMobileMenuOpen && (
-        <button
-          type="button"
-          className="sidebar-backdrop"
-          onClick={closeMobileMenu}
-          aria-label="Fechar menu"
-        />
-      )}
+          return (
+            <div className="app-shell">
+              {isMobileMenuOpen && (
+                <button
+                  type="button"
+                  className="sidebar-backdrop"
+                  onClick={closeMobileMenu}
+                  aria-label="Fechar menu"
+                />
+              )}
 
-      <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
-        <div className="sidebar-top">
-          <div className="sidebar-brand">
-            <p className="sidebar-logo">OR Agenda</p>
-            <p className="sidebar-subtitle">Painel Administrativo</p>
-          </div>
+              <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+                <div className="sidebar-top">
+                  <div className="sidebar-brand">
+                  <img
+                    src={orAgendaLogo}
+                    alt="OR Agenda"
+                    className="sidebar-brand-logo"
+                  />
 
-          <nav className="sidebar-nav">
-            {navigationItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `sidebar-link ${isActive ? 'active' : ''}`
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
+                  <p className="sidebar-subtitle">Painel Administrativo</p>
+                </div>
+
+                <nav className="sidebar-nav">
+          {navigationItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                `sidebar-link ${isActive ? 'active' : ''}`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+
+          {isPlatformAdmin && (
+            <>
+              <span className="sidebar-section-label">Plataforma</span>
+
+              {platformNavigationItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `sidebar-link ${isActive ? 'active' : ''}`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+            </>
+          )}
+        </nav>
         </div>
 
         <div className="sidebar-footer">

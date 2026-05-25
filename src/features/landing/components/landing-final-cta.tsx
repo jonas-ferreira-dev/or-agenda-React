@@ -1,6 +1,6 @@
 // src/features/landing/components/landing-final-cta.tsx
 
-const whatsappNumber = '5521999999999';
+const whatsappNumber = '5521988153770';
 
 const whatsappMessage = encodeURIComponent(
   'Olá! Quero uma agenda online para meu negócio.'
