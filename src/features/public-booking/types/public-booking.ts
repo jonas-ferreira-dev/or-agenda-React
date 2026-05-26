@@ -4,6 +4,7 @@ export type PublicProfessional = {
   bio: string | null;
   profile_photo: string | null;
   booking_enabled: boolean;
+  available_weekdays: number[];
 };
 
 export type PublicProfessionalResponse = {
@@ -25,6 +26,11 @@ export type PublicServicesResponse = {
   data: PublicService[];
 };
 
+export type PublicAvailableSlot = {
+  start_time: string;
+  end_time: string;
+};
+
 export type BusySlot = {
   start_time: string;
   end_time: string;
@@ -34,8 +40,8 @@ export type PublicAvailabilityData = {
   date: string;
   service_id: number;
   duration_minutes: number;
-  available_slots: string[];
-  busy_slots: BusySlot[];
+  available_slots: PublicAvailableSlot[];
+  busy_slots?: BusySlot[];
 };
 
 export type PublicAvailabilityResponse = {

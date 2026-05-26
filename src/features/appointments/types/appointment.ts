@@ -28,12 +28,23 @@ export type Appointment = {
   appointment_date: string;
   start_time: string;
   end_time: string;
-  status: AppointmentStatus;
-  notes: string | null;
-  client: AppointmentClient;
-  service: AppointmentService;
-  created_at?: string;
-  updated_at?: string;
+  status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled';
+  notes?: string | null;
+  cancellation_reason?: string | null;
+  cancelled_at?: string | null;
+  cancelled_by?: string | null;
+  client?: {
+    id: number;
+    name: string;
+    email?: string | null;
+    phone?: string | null;
+  };
+  service?: {
+    id: number;
+    name: string;
+    duration_minutes?: number;
+    price?: string | number | null;
+  };
 };
 
 export type AppointmentsListResponse = {

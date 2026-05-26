@@ -52,6 +52,48 @@ type BookingDraft = {
   notes: string;
 };
 
+function getWeekday(dateString: string) {
+  const date = new Date(`${dateString}T00:00:00`);
+
+  return date.getDay();
+}
+
+function formatShortDate(dateString: string) {
+  const date = new Date(`${dateString}T00:00:00`);
+
+  return new Intl.DateTimeFormat('pt-BR', {
+    weekday: 'short',
+    day: '2-digit',
+    month: '2-digit',
+  }).format(date);
+}
+
+function toDateInputValue(date: Date) {
+  return date.toISOString().split('T')[0];
+}
+
+function generateAvailableDates(availableWeekdays: number[], daysAhead = 45) {
+  const dates: string[] = [];
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+
+  for (let index = 0; index <= daysAhead; index += 1) {
+    const date = new Date(today);
+
+    date.setDate(today.getDate() + index);
+
+    const dateValue = toDateInputValue(date);
+    const weekday = getWeekday(dateValue);
+
+    if (availableWeekdays.includes(weekday)) {
+      dates.push(dateValue);
+    }
+  }
+
+  return dates;
+}
+
 function formatDate(dateString: string) {
   if (!dateString) return '-';
 
@@ -99,6 +141,10 @@ export function PublicBookingChat({
     () => services.find((service) => service.id === draft.service_id) ?? null,
     [services, draft.service_id]
   );
+
+  const availableDates = useMemo(() => {
+  return generateAvailableDates(professional.available_weekdays ?? []);
+}, [professional.available_weekdays]);
 
   function addBotMessage(text: string) {
     setMessages((prev) => [...prev, { id: createId(), role: 'bot', text }]);
@@ -367,15 +413,45 @@ export function PublicBookingChat({
     }
 
     if (step === 'date') {
+      if (!availableDates.length) {
+        return (
+          <div className="chat-panel">
+            <div className="public-empty-state">
+              <p>
+                Este profissional ainda não configurou datas disponíveis para
+                agendamento.
+              </p>
+            </div>
+          </div>
+        );
+      }
+
       return (
         <div className="chat-panel">
-          <Input
-            type="date"
-            min={new Date().toISOString().split('T')[0]}
-            value={selectedDate}
-            onChange={(event) => setSelectedDate(event.target.value)}
-          />
-          <Button type="button" onClick={handleConfirmDate} disabled={!selectedDate}>
+          <p className="chat-helper-text">
+            Escolha uma das datas disponíveis:
+          </p>
+
+          <div className="public-date-grid">
+            {availableDates.map((date) => (
+              <button
+                key={date}
+                type="button"
+                className={`public-date-button ${
+                  selectedDate === date ? 'selected' : ''
+                }`}
+                onClick={() => setSelectedDate(date)}
+              >
+                {formatShortDate(date)}
+              </button>
+            ))}
+          </div>
+
+          <Button
+            type="button"
+            onClick={handleConfirmDate}
+            disabled={!selectedDate}
+          >
             Ver horários
           </Button>
         </div>

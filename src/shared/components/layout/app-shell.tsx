@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import orAgendaLogo from '@/assets/or-agenda-logo.png';
+import { useQueryClient } from '@tanstack/react-query';
 
 const navigationItems = [
   { label: 'Dashboard', to: '/dashboard' },
@@ -22,6 +23,7 @@ export function AppShell() {
   const isPlatformAdmin = user?.is_platform_admin === true;
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -30,9 +32,16 @@ export function AppShell() {
   }, [location.pathname]);
 
   async function handleLogout() {
+  try {
     await signOut();
-    navigate('/login', { replace: true });
+  } finally {
+    queryClient.clear();
+
+    navigate('/login', {
+      replace: true,
+    });
   }
+}
 
   function toggleMobileMenu() {
     setIsMobileMenuOpen((prev) => !prev);

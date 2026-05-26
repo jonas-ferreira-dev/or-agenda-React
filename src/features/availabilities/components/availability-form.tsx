@@ -25,7 +25,7 @@ export function AvailabilityForm({
 }: AvailabilityFormProps) {
   const isEditing = selectedAvailability !== null;
 
-  const [weekday, setWeekday] = useState(1);
+  const [selectedWeekdays, setSelectedWeekdays] = useState<number[]>([1]);
   const [startTime, setStartTime] = useState('10:00');
   const [endTime, setEndTime] = useState('12:00');
   const [isActive, setIsActive] = useState(true);
@@ -33,7 +33,7 @@ export function AvailabilityForm({
 
   useEffect(() => {
     if (!selectedAvailability) {
-      setWeekday(1);
+      setSelectedWeekdays([1]);
       setStartTime('10:00');
       setEndTime('12:00');
       setIsActive(true);
@@ -41,27 +41,48 @@ export function AvailabilityForm({
       return;
     }
 
-    setWeekday(selectedAvailability.weekday);
+    setSelectedWeekdays([selectedAvailability.weekday]);
     setStartTime(selectedAvailability.start_time.slice(0, 5));
     setEndTime(selectedAvailability.end_time.slice(0, 5));
     setIsActive(selectedAvailability.is_active);
     setServerError('');
   }, [selectedAvailability]);
 
-  const mutation = useMutation({
-    mutationFn: async () => {
-      const payload = {
-        weekday,
-        start_time: startTime,
-        end_time: endTime,
-        is_active: isActive,
-      };
-
-      if (isEditing) {
-        return updateAvailability(selectedAvailability.id, payload);
+  function toggleWeekday(weekday: number) {
+    setSelectedWeekdays((current) => {
+      if (current.includes(weekday)) {
+        return current.filter((day) => day !== weekday);
       }
 
-      return createAvailability(payload);
+      return [...current, weekday].sort((a, b) => a - b);
+    });
+  }
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      if (!selectedWeekdays.length) {
+        throw new Error('Selecione pelo menos um dia da semana.');
+      }
+
+      if (isEditing) {
+        return updateAvailability(selectedAvailability.id, {
+          weekday: selectedWeekdays[0],
+          start_time: startTime,
+          end_time: endTime,
+          is_active: isActive,
+        });
+      }
+
+      return Promise.all(
+        selectedWeekdays.map((weekday) =>
+          createAvailability({
+            weekday,
+            start_time: startTime,
+            end_time: endTime,
+            is_active: isActive,
+          })
+        )
+      );
     },
     onSuccess: () => {
       setServerError('');
@@ -75,7 +96,7 @@ export function AvailabilityForm({
           const firstError = Object.values(errors)[0];
 
           if (Array.isArray(firstError) && firstError[0]) {
-            setServerError(firstError[0]);
+            setServerError(String(firstError[0]));
             return;
           }
         }
@@ -83,6 +104,11 @@ export function AvailabilityForm({
         setServerError(
           error.response?.data?.message || 'Erro ao salvar horário.'
         );
+        return;
+      }
+
+      if (error instanceof Error) {
+        setServerError(error.message);
         return;
       }
 
@@ -101,22 +127,27 @@ export function AvailabilityForm({
       {serverError && <p className="server-error">{serverError}</p>}
 
       <div className="form-field">
-        <label className="form-label" htmlFor="availability-weekday">
-          Dia da semana
-        </label>
+        <label className="form-label">Dia(s) da semana</label>
 
-        <select
-          id="availability-weekday"
-          className="ui-input"
-          value={weekday}
-          onChange={(event) => setWeekday(Number(event.target.value))}
-        >
+        <div className="weekday-checkbox-grid">
           {WEEKDAYS.map((day) => (
-            <option key={day.value} value={day.value}>
-              {day.label}
-            </option>
+            <label key={day.value} className="weekday-checkbox">
+              <input
+                type="checkbox"
+                checked={selectedWeekdays.includes(day.value)}
+                disabled={isEditing}
+                onChange={() => toggleWeekday(day.value)}
+              />
+              <span>{day.label}</span>
+            </label>
           ))}
-        </select>
+        </div>
+
+        {isEditing && (
+          <p className="form-helper-text">
+            Para editar o dia, remova este horário e cadastre novamente.
+          </p>
+        )}
       </div>
 
       <div className="form-grid">

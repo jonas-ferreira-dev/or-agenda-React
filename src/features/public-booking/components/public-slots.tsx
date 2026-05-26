@@ -1,5 +1,7 @@
+import type { PublicAvailableSlot } from '../types/public-booking';
+
 type PublicSlotsProps = {
-  slots: string[];
+  slots: PublicAvailableSlot[];
   selectedSlot: string;
   onSelect: (slot: string) => void;
 };
@@ -21,14 +23,14 @@ export function PublicSlots({
     <div className="public-slots-grid">
       {slots.map((slot) => (
         <button
-          key={slot}
+          key={`${slot.start_time}-${slot.end_time}`}
           type="button"
           className={`public-slot-button ${
-            selectedSlot === slot ? 'selected' : ''
+            selectedSlot === slot.start_time ? 'selected' : ''
           }`}
-          onClick={() => onSelect(slot)}
+          onClick={() => onSelect(slot.start_time)}
         >
-          {slot}
+          {slot.start_time}
         </button>
       ))}
     </div>

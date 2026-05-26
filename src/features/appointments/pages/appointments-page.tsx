@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import axios from 'axios';
 import {
@@ -178,6 +179,11 @@ export function AppointmentsPage() {
             appointments={appointments}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onCancelled={() => {
+              queryClient.invalidateQueries({
+                queryKey: ['appointments'],
+              });
+            }}
           />
         </>
       )}

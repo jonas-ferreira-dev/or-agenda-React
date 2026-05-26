@@ -2765,3 +2765,101 @@ body,
     gap: 4px;
   }
 }
+
+.public-date-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  gap: 10px;
+}
+
+.public-date-button {
+  min-height: 46px;
+  border-radius: 14px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #111827;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.public-date-button:hover {
+  border-color: #111827;
+}
+
+.public-date-button.selected {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.weekday-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.weekday-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #111827;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.weekday-checkbox input {
+  width: 16px;
+  height: 16px;
+}
+
+.weekday-checkbox:has(input:checked) {
+  border-color: #111827;
+  background: #f3f4f6;
+}
+
+.weekday-checkbox:has(input:disabled) {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.form-helper-text {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+@media (max-width: 560px) {
+  .weekday-checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cancel-appointment-summary {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #111827;
+}
+
+.cancel-appointment-summary strong {
+  font-size: 15px;
+}
+
+.cancel-appointment-summary span {
+  color: #7f1d1d;
+  font-size: 14px;
+}
+
+.cancel-reason-textarea {
+  min-height: 120px;
+  resize: vertical;
+}

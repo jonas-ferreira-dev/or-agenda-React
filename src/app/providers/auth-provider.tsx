@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+
 import { AuthContext } from '@/features/auth/hooks/use-auth';
 import type { User } from '@/features/auth/types/auth';
 import { getMeRequest } from '@/features/auth/services/me';
@@ -14,6 +16,8 @@ type AuthProviderProps = {
 };
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const queryClient = useQueryClient();
+
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,20 +31,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       try {
-        const response = await getMeRequest();
-        setUser(response.user);
+        const authenticatedUser = await getMeRequest();
+
+        setUser(authenticatedUser);
       } catch {
         removeAccessToken();
         setUser(null);
+        queryClient.clear();
       } finally {
         setIsLoading(false);
       }
     }
 
     bootstrap();
-  }, []);
+  }, [queryClient]);
 
   function signIn(token: string, nextUser: User) {
+    queryClient.clear();
+
     setAccessToken(token);
     setUser(nextUser);
   }
@@ -49,9 +57,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       await logoutRequest();
     } catch {
+      // Mesmo se o backend falhar no logout, limpamos a sessão local.
     } finally {
       removeAccessToken();
       setUser(null);
+      queryClient.clear();
     }
   }
 
