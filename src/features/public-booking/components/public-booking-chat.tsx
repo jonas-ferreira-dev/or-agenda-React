@@ -94,6 +94,46 @@ function generateAvailableDates(availableWeekdays: number[], daysAhead = 45) {
   return dates;
 }
 
+function onlyDigits(value: string) {
+  return value.replace(/\D/g, '');
+}
+
+function formatBrazilianPhone(value: string) {
+  const digits = onlyDigits(value).slice(0, 11);
+
+  if (digits.length <= 2) {
+    return digits;
+  }
+
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  }
+
+  if (digits.length <= 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+function isValidBrazilianPhone(value: string) {
+  const digits = onlyDigits(value);
+
+  return digits.length === 10 || digits.length === 11;
+}
+
+function isValidEmail(value: string) {
+  const email = value.trim();
+
+  if (!email.includes('@')) {
+    return false;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  return emailRegex.test(email);
+}
+
 function formatDate(dateString: string) {
   if (!dateString) return '-';
 
@@ -270,22 +310,36 @@ export function PublicBookingChat({
     }
 
     if (step === 'phone') {
-      setDraft((prev) => ({ ...prev, phone: value }));
-      addUserMessage(value);
-      addBotMessage('Deseja informar um e-mail também?');
-      setTypedValue('');
-      setStep('email_choice');
-      return;
-    }
+        const phoneDigits = onlyDigits(value);
+
+        if (!isValidBrazilianPhone(phoneDigits)) {
+          addBotMessage('Informe um telefone válido com DDD. Exemplo: (21) 99999-9999.');
+          return;
+        }
+
+        const formattedPhone = formatBrazilianPhone(phoneDigits);
+
+        setDraft((prev) => ({ ...prev, phone: phoneDigits }));
+        addUserMessage(formattedPhone);
+        addBotMessage('Deseja informar um e-mail também?');
+        setTypedValue('');
+        setStep('email_choice');
+        return;
+      }
 
     if (step === 'email') {
-      setDraft((prev) => ({ ...prev, email: value }));
-      addUserMessage(value);
-      addBotMessage('Deseja deixar alguma observação para o atendimento?');
-      setTypedValue('');
-      setStep('notes_choice');
-      return;
-    }
+        if (!isValidEmail(value)) {
+          addBotMessage('Informe um e-mail válido. Exemplo: cliente@email.com.');
+          return;
+        }
+
+        setDraft((prev) => ({ ...prev, email: value.trim().toLowerCase() }));
+        addUserMessage(value.trim().toLowerCase());
+        addBotMessage('Deseja deixar alguma observação para o atendimento?');
+        setTypedValue('');
+        setStep('notes_choice');
+        return;
+      }
 
     if (step === 'notes') {
       setDraft((prev) => ({ ...prev, notes: value }));
@@ -574,17 +628,33 @@ export function PublicBookingChat({
       return (
         <div className="chat-panel input-panel">
           <Input
-            value={typedValue}
-            type={currentStep === 'email' ? 'email' : 'text'}
-            placeholder={placeholderMap[currentStep]}
-            onChange={(event) => setTypedValue(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-                handleTypedSubmit();
-              }
-            }}
-          />
+                value={typedValue}
+                type={
+                  currentStep === 'email'
+                    ? 'email'
+                    : currentStep === 'phone'
+                      ? 'tel'
+                      : 'text'
+                }
+                inputMode={currentStep === 'phone' ? 'numeric' : undefined}
+                placeholder={placeholderMap[currentStep]}
+                onChange={(event) => {
+                  const value = event.target.value;
+
+                  if (currentStep === 'phone') {
+                    setTypedValue(formatBrazilianPhone(value));
+                    return;
+                  }
+
+                  setTypedValue(value);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                    handleTypedSubmit();
+                  }
+                }}
+              />
           <Button type="button" onClick={handleTypedSubmit} disabled={!typedValue.trim()}>
             Enviar
           </Button>
