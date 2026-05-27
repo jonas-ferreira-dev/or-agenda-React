@@ -115,7 +115,7 @@ export function AvailabilitiesPage() {
                 onClick={handleCloseModal}
                 aria-label="Fechar modal"
               >
-                ×
+                x
               </button>
             </div>
 

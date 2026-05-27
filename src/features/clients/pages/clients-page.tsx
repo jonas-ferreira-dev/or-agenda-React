@@ -159,7 +159,7 @@ export function ClientsPage() {
               </div>
 
               <button className="modal-close-button" onClick={handleCloseForm}>
-                Fechar
+                x
               </button>
             </div>
 
