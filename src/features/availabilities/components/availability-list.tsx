@@ -1,8 +1,6 @@
 // src/features/availabilities/components/availability-list.tsx
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-import { Button } from '@/shared/components/ui/button';
 import { deleteAvailability } from '../services/delete-availability';
 import { updateAvailability } from '../services/update-availability';
 import {

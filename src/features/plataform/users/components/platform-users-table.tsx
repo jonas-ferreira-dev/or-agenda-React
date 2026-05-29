@@ -1,6 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-import { Button } from '@/shared/components/ui/button';
 import { updatePlatformUser } from '../services/update-platform-user';
 import type { PlatformUser } from '../types/plataform-user';
 
