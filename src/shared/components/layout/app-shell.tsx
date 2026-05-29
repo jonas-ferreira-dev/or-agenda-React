@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import orAgendaLogo from '@/assets/or-agenda-logo.png';
-import { useQueryClient } from '@tanstack/react-query';
 
 const navigationItems = [
   { label: 'Dashboard', to: '/dashboard' },
@@ -21,6 +22,7 @@ const platformNavigationItems = [
 export function AppShell() {
   const { user, signOut } = useAuth();
   const isPlatformAdmin = user?.is_platform_admin === true;
+
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -32,16 +34,16 @@ export function AppShell() {
   }, [location.pathname]);
 
   async function handleLogout() {
-  try {
-    await signOut();
-  } finally {
-    queryClient.clear();
+    try {
+      await signOut();
+    } finally {
+      queryClient.clear();
 
-    navigate('/login', {
-      replace: true,
-    });
+      navigate('/login', {
+        replace: true,
+      });
+    }
   }
-}
 
   function toggleMobileMenu() {
     setIsMobileMenuOpen((prev) => !prev);
@@ -51,60 +53,60 @@ export function AppShell() {
     setIsMobileMenuOpen(false);
   }
 
-          return (
-            <div className="app-shell">
-              {isMobileMenuOpen && (
-                <button
-                  type="button"
-                  className="sidebar-backdrop"
-                  onClick={closeMobileMenu}
-                  aria-label="Fechar menu"
-                />
-              )}
+  return (
+    <div className="app-shell">
+      {isMobileMenuOpen && (
+        <button
+          type="button"
+          className="sidebar-backdrop"
+          onClick={closeMobileMenu}
+          aria-label="Fechar menu"
+        />
+      )}
 
-              <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
-                <div className="sidebar-top">
-                  <div className="sidebar-brand">
-                  <img
-                    src={orAgendaLogo}
-                    alt="OR Agenda"
-                    className="sidebar-brand-logo"
-                  />
+      <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div className="sidebar-top">
+          <div className="sidebar-brand">
+            <img
+              src={orAgendaLogo}
+              alt="OR Agenda"
+              className="sidebar-brand-logo"
+            />
 
-                  <p className="sidebar-subtitle">Painel Administrativo</p>
-                </div>
+            <p className="sidebar-subtitle">Painel Administrativo</p>
+          </div>
 
-                <nav className="sidebar-nav">
-          {navigationItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `sidebar-link ${isActive ? 'active' : ''}`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
+          <nav className="sidebar-nav">
+            {navigationItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `sidebar-link ${isActive ? 'active' : ''}`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
 
-          {isPlatformAdmin && (
-            <>
-              <span className="sidebar-section-label">Plataforma</span>
+            {isPlatformAdmin && (
+              <>
+                <span className="sidebar-section-label">Plataforma</span>
 
-              {platformNavigationItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  className={({ isActive }) =>
-                    `sidebar-link ${isActive ? 'active' : ''}`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-            </>
-          )}
-        </nav>
+                {platformNavigationItems.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    className={({ isActive }) =>
+                      `sidebar-link ${isActive ? 'active' : ''}`
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                ))}
+              </>
+            )}
+          </nav>
         </div>
 
         <div className="sidebar-footer">
@@ -115,7 +117,7 @@ export function AppShell() {
       </aside>
 
       <div className="app-content">
-        <header className="topbar">
+        <header className="topbar compact-topbar">
           <div className="topbar-left">
             <button
               type="button"
@@ -126,11 +128,9 @@ export function AppShell() {
               ☰
             </button>
 
-            <div>
-              <p className="topbar-title">Painel Administrativo</p>
-              <p className="topbar-subtitle">
-                Bem-vindo{user?.name ? `, ${user.name}` : ''}.
-              </p>
+            <div className="topbar-compact-user">
+              <span>Bem-vindo</span>
+              <strong>{user?.name ?? 'Usuário'}</strong>
             </div>
           </div>
         </header>

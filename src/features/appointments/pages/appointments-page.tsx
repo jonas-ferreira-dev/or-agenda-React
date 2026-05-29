@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import axios from 'axios';
 import {
@@ -13,6 +12,7 @@ import { deleteAppointment } from '../services/delete-appointment';
 import { AppointmentForm } from '../components/appointment-form';
 import { AppointmentsTable } from '../components/appointments-table';
 import { AppointmentFilters } from '../components/appointment-filters';
+import { AppointmentSummaryCards } from '../components/appointment-summary-cards';
 import type { Appointment } from '../types/appointment';
 import type { AppointmentFilters as AppointmentFiltersType } from '../types/appointment-filters';
 
@@ -37,7 +37,8 @@ export function AppointmentsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
-  const [filters, setFilters] = useState<AppointmentFiltersType>(INITIAL_FILTERS);
+  const [filters, setFilters] =
+    useState<AppointmentFiltersType>(INITIAL_FILTERS);
 
   const {
     data: appointmentsData,
@@ -81,6 +82,9 @@ export function AppointmentsPage() {
   const clients: Client[] = clientsData?.data ?? [];
   const services: Service[] = servicesData?.data ?? [];
 
+  const pageError = getPageErrorMessage();
+  const isFormDataLoading = isLoadingClients || isLoadingServices;
+
   function getPageErrorMessage() {
     if (!error) return '';
 
@@ -103,7 +107,9 @@ export function AppointmentsPage() {
 
   async function handleDelete(appointment: Appointment) {
     const confirmed = window.confirm(
-      `Deseja excluir o agendamento de "${appointment.client?.name ?? 'cliente'}"?`
+      `Deseja excluir o agendamento de "${
+        appointment.client?.name ?? 'cliente'
+      }"?`
     );
 
     if (!confirmed) return;
@@ -113,7 +119,8 @@ export function AppointmentsPage() {
     } catch (mutationError) {
       if (axios.isAxiosError(mutationError)) {
         alert(
-          mutationError.response?.data?.message || 'Erro ao excluir agendamento.'
+          mutationError.response?.data?.message ||
+            'Erro ao excluir agendamento.'
         );
         return;
       }
@@ -126,7 +133,9 @@ export function AppointmentsPage() {
     setIsFormOpen(false);
     setSelectedAppointment(null);
 
-    await queryClient.invalidateQueries({ queryKey: APPOINTMENTS_QUERY_KEY });
+    await queryClient.invalidateQueries({
+      queryKey: APPOINTMENTS_QUERY_KEY,
+    });
   }
 
   function handleCloseForm() {
@@ -138,39 +147,51 @@ export function AppointmentsPage() {
     setFilters(INITIAL_FILTERS);
   }
 
-  const pageError = getPageErrorMessage();
-  const isFormDataLoading = isLoadingClients || isLoadingServices;
+  function handleAppointmentCancelled() {
+    queryClient.invalidateQueries({
+      queryKey: APPOINTMENTS_QUERY_KEY,
+    });
+  }
 
   return (
-    <div className="content-stack">
-      <div className="page-header">
+    <div className="content-stack appointments-page">
+      <div className="page-header appointments-page-header">
         <div>
           <span className="section-badge">Agendamentos</span>
+
           <h1 className="page-title">Gestão de agendamentos</h1>
+
           <p className="page-description">
-            Organize sua agenda, clientes e serviços em um só lugar.
+            Acompanhe seus atendimentos, filtre compromissos e mantenha sua
+            agenda organizada.
           </p>
         </div>
 
-        <Button onClick={handleCreate}>Novo agendamento</Button>
+        <Button type="button" onClick={handleCreate}>
+          Novo agendamento
+        </Button>
       </div>
 
-      <AppointmentFilters
-        filters={filters}
-        onChange={setFilters}
-        onClear={handleClearFilters}
-      />
+      <AppointmentSummaryCards appointments={appointments} />
+
+      <div className="appointments-filters-wrapper">
+        <AppointmentFilters
+          filters={filters}
+          onChange={setFilters}
+          onClear={handleClearFilters}
+        />
+      </div>
 
       {pageError && <p className="server-error">{pageError}</p>}
 
       {isLoading ? (
-        <div className="table-card">
+        <div className="table-card appointments-loading-card">
           <p>Carregando agendamentos...</p>
         </div>
       ) : (
         <>
           {isFetching && (
-            <div className="table-card">
+            <div className="appointments-refresh-state">
               <p>Atualizando lista...</p>
             </div>
           )}
@@ -179,32 +200,39 @@ export function AppointmentsPage() {
             appointments={appointments}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            onCancelled={() => {
-              queryClient.invalidateQueries({
-                queryKey: ['appointments'],
-              });
-            }}
+            onCancelled={handleAppointmentCancelled}
           />
         </>
       )}
 
       {isFormOpen && (
         <div className="modal-overlay" onClick={handleCloseForm}>
-          <div className="modal-card" onClick={(event) => event.stopPropagation()}>
+          <div
+            className="modal-card"
+            onClick={(event) => event.stopPropagation()}
+          >
             <div className="modal-header">
               <div>
-                <h2>
-                  {selectedAppointment ? 'Editar agendamento' : 'Novo agendamento'}
+                <h2 className="modal-title">
+                  {selectedAppointment
+                    ? 'Editar agendamento'
+                    : 'Novo agendamento'}
                 </h2>
-                <p>
+
+                <p className="modal-description">
                   {selectedAppointment
                     ? 'Atualize os dados do agendamento.'
                     : 'Preencha os dados para cadastrar um novo agendamento.'}
                 </p>
               </div>
 
-              <button className="modal-close-button" onClick={handleCloseForm}>
-                x
+              <button
+                type="button"
+                className="modal-close-button"
+                onClick={handleCloseForm}
+                aria-label="Fechar modal"
+              >
+                ×
               </button>
             </div>
 
